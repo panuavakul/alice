@@ -1,9 +1,6 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:alice/alice.dart';
-import 'package:alice_example/posts_service.dart';
-import 'package:chopper/chopper.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
@@ -18,11 +15,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   late Alice _alice;
   late Dio _dio;
-  ChopperClient? _chopper;
-  late PostsService _postsService;
   Color _primaryColor = Color(0xffff5e57);
   Color _accentColor = Color(0xffff3f34);
   Color _buttonColor = Color(0xff008000);
+  TextStyle _buttonTextStyle = TextStyle(color: Colors.white);
 
   @override
   void initState() {
@@ -35,7 +31,6 @@ class _MyAppState extends State<MyApp> {
       followRedirects: false,
     ));
     _dio.interceptors.add(_alice.getDioInterceptor());
-    _postsService = PostsService.create(_chopper);
 
     super.initState();
   }
@@ -44,7 +39,6 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     ButtonStyle _buttonStyle = ButtonStyle(
         backgroundColor: WidgetStateProperty.all<Color>(_buttonColor));
-    // backgroundColor:
     return MaterialApp(
       theme: ThemeData(
         primaryColor: _primaryColor,
@@ -64,19 +58,19 @@ class _MyAppState extends State<MyApp> {
               _getTextWidget(
                   'Welcome to example of Alice Http Inspector. Click buttons below to generate sample data.'),
               ElevatedButton(
-                child: Text('Run Dio HTTP Requests'),
+                child: Text(
+                  'Run Dio HTTP Requests',
+                  style: _buttonTextStyle,
+                ),
                 onPressed: _runDioRequests,
                 style: _buttonStyle,
               ),
               const SizedBox(height: 8),
               ElevatedButton(
-                child: Text('Run Chopper HTTP Requests'),
-                onPressed: _runChopperHttpRequests,
-                style: _buttonStyle,
-              ),
-              const SizedBox(height: 8),
-              ElevatedButton(
-                child: Text('Log example data'),
+                child: Text(
+                  'Log example data',
+                  style: _buttonTextStyle,
+                ),
                 onPressed: _logExampleData,
                 style: _buttonStyle,
               ),
@@ -85,7 +79,10 @@ class _MyAppState extends State<MyApp> {
                   'After clicking on buttons above, you should receive notification.'
                   ' Click on it to show inspector. You can also shake your device or click button below.'),
               ElevatedButton(
-                child: Text('Run HTTP Inspector'),
+                child: Text(
+                  'Run HTTP Inspector',
+                  style: _buttonTextStyle,
+                ),
                 onPressed: _runHttpInspector,
                 style: _buttonStyle,
               )
@@ -142,18 +139,6 @@ class _MyAppState extends State<MyApp> {
       );
     }
     _alice.addLogs(logs);
-  }
-
-  void _runChopperHttpRequests() async {
-    String body = jsonEncode(
-        <String, dynamic>{'title': 'foo', 'body': 'bar', 'userId': '1'});
-    _postsService.getPost('1');
-    _postsService.postPost(body);
-    _postsService.putPost('1', body);
-    _postsService.putPost('1231923', body);
-    _postsService.putPost('1', null);
-    _postsService.postPost(null);
-    _postsService.getPost('123456');
   }
 
   void _runDioRequests() async {
