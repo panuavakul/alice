@@ -1,16 +1,13 @@
 import 'dart:io';
 
-import 'package:alice/core/alice_chopper_response_interceptor.dart';
 import 'package:alice/core/alice_core.dart';
 import 'package:alice/core/alice_dio_interceptor.dart';
-import 'package:alice/core/alice_http_adapter.dart';
 import 'package:alice/core/alice_http_client_adapter.dart';
 import 'package:alice/model/alice_http_call.dart';
 import 'package:alice/model/alice_log.dart';
-import 'package:chopper/chopper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
 
 export 'package:alice/model/alice_log.dart';
 
@@ -40,7 +37,6 @@ class Alice {
   GlobalKey<NavigatorState>? _navigatorKey;
   late AliceCore _aliceCore;
   late AliceHttpClientAdapter _httpClientAdapter;
-  late AliceHttpAdapter _httpAdapter;
 
   /// Creates alice instance.
   Alice({
@@ -62,8 +58,6 @@ class Alice {
       directionality: directionality,
       showShareButton: showShareButton,
     );
-    _httpClientAdapter = AliceHttpClientAdapter(_aliceCore);
-    _httpAdapter = AliceHttpAdapter(_aliceCore);
   }
 
   /// Set custom navigation key. This will help if there's route library.
@@ -96,20 +90,10 @@ class Alice {
     _httpClientAdapter.onResponse(response, request, body: body);
   }
 
-  /// Handle both request and response from http package
-  void onHttpResponse(http.Response response, {dynamic body}) {
-    _httpAdapter.onResponse(response, body: body);
-  }
-
   /// Opens Http calls inspector. This will navigate user to the new fullscreen
   /// page where all listened http calls can be viewed.
   void showInspector() {
     _aliceCore.navigateToCallListScreen();
-  }
-
-  /// Get chopper interceptor. This should be added to Chopper instance.
-  ResponseInterceptor getChopperInterceptor() {
-    return AliceChopperInterceptor(_aliceCore);
   }
 
   /// Handle generic http call. Can be used to any http client.
